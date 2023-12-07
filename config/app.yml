@@ -1,0 +1,20 @@
+mysql:
+  dns: root:123456@tcp(192.168.229.130:3306)/fil_db?charset=utf8mb4&parseTime=True&loc=Local
+
+env: online
+
+datasource:
+  host: 192.168.83.109
+  port: 3306
+  database: fil_db
+  username: ethan
+  password: Ethan@123
+
+datasource-local:
+  host: 192.168.229.130
+  port: 3306
+  database: fil_db
+  username: root
+  password: 123456
+# "f01807413", "f01822659", "f01845913", "f01874748","f01834260", "f01899511",
+nodes: ["f01900855","f01903889","f1a6zaejf7mpr7hx7brjfln2d4ytlqic545vo3buy","f01926720", "f01907417", "f02245987"]

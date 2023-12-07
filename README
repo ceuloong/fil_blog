@@ -1,0 +1,101 @@
+#string到int
+int,err := strconv.Atoi(string)
+
+#string到int64
+int64, err := strconv.ParseInt(string, 10, 64)
+//第二个参数为基数（2~36），
+//第三个参数位大小表示期望转换的结果类型，其值可以为0, 8, 16, 32和64，
+//分别对应 int, int8, int16, int32和int64
+
+#int到string
+string := strconv.Itoa(int)
+//等价于
+string := strconv.FormatInt(int64(int),10)
+
+#int64到string
+string := strconv.FormatInt(int64,10)
+//第二个参数为基数，可选2~36
+//对于无符号整形，可以使用FormatUint(i uint64, base int)
+
+#float到string
+string := strconv.FormatFloat(float32,'E',-1,32)
+string := strconv.FormatFloat(float64,'E',-1,64)
+// 'b' (-ddddp±ddd，二进制指数)
+// 'e' (-d.dddde±dd，十进制指数)
+// 'E' (-d.ddddE±dd，十进制指数)
+// 'f' (-ddd.dddd，没有指数)
+// 'g' ('e':大指数，'f':其它情况)
+// 'G' ('E':大指数，'f':其它情况)
+
+#string到float64
+float,err := strconv.ParseFloat(string,64)
+
+#string到float32
+float,err := strconv.ParseFloat(string,32)
+
+#int到int64
+int64_ := int64(1234)
+
+
+获取当前时间、秒级时间戳
+time.Now()// 获取当前时间，类型为time.Time
+1.
+time.Unix()// 获取当前时间的秒级时间戳,时间戳的起始时间是2006-01-02 15:04:05，go语言的诞生时间
+1.
+获取任意时间的秒级时间戳
+t.Unix()// 获取秒级时间戳
+1.
+时间、时间戳转换为字符串
+时间转时间字符串
+
+timeStr := time.Now().Format("2006-01-02")
+1.
+时间戳转时间字符串
+
+timeTemplate1 := "2006-01-02 15:04:05"
+t := int64(1546926630)      //外部传入的时间戳（秒为单位），必须为int64类型
+timeStr := time.Unix(t, 0).Format(timeTemplate1)
+1.
+2.
+3.
+字符串转时间对象
+方式一
+time.ParseInLocation()转换成本地时区的时间
+
+timeTemplate1 := "2006-01-02 15:04:05"
+t1 := "2019-01-08 13:50:30" //外部传入的时间字符串
+t1_time, _ := time.ParseInLocation(timeTemplate1, t1, time.Local) //使用parseInLocation将字符串格式化返回本地时区时间
+1.
+2.
+3.
+方式二
+如果调用 time .parse() 会相差 8小时。默认时区是utc
+
+time1 := "2015-03-20 08:50:29"
+t1, err := time.Parse("2006-01-02 15:04:05", time1)
+1.
+2.
+参考： golang的time包：时间字符串和时间戳的相互转换
+
+时间对象（time.Time)的比较
+Before, After, Equal，分别对应<,>,==
+
+t1.Before(t2)// t1 < t2
+t1.After(t2)// t1 > t2
+t1.Equal(t2)// t1 == t2
+1.
+2.
+3.
+参考：golang比较时间大小
+
+当前时间加1分钟
+time.ParseDuration()函数参数的有效时间单位为“ns”、“us”（或“µs”）、“ms”、“s”、“m”、“h”。该函数返回一个 Duration 对象，配合time的Add()方法使用，可以获取相差指定区间的时间。这个函数假设没有润秒。后面需要验证下会不会有闰年这种考虑。
+
+// 当前时间加一分钟
+ m, _ := time.ParseDuration("1m")
+ m1 := time.Now().Add(m)
+
+ // 转换成时间字符串
+ str := m1.Format("2006-01-02 15:04:05")
+
+ fmt.Println(str) // 输出："2019-07-24 14:14:56"
