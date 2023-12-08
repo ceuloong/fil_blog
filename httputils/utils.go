@@ -57,7 +57,7 @@ func DecimalValueFromFloat(f64 float64) decimal.Decimal {
 
 func DecimalDiv18Value(str string) decimal.Decimal {
 	value, _ := decimal.NewFromString(str)
-	v := value.Div(decimal.NewFromFloat(math.Pow10(18))).Round(4)
+	v := value.Div(decimal.NewFromFloat(math.Pow10(18))).Round(8)
 	return v
 }
 
