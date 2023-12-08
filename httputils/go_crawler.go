@@ -280,34 +280,34 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 		//fmt.Printf("nodes=%+v\n", n)
 		time.Sleep(5 * time.Second)
 
-		//if !oneNode.Balance.IsZero() {
-		log.Printf("获取节点%s的24hminer状态\n", oneNode.Node)
-		miningDetail := MiningStats(oneNode.Node)
-		n.BlocksMined24h = miningDetail.BlocksMined
-		n.WeightedBlocksMined24h = miningDetail.WeightedBlocksMined
-		n.TotalRewards24h = DecimalDiv18Value(miningDetail.TotalRewards)
-		n.LuckyValue24h = decimal.NewFromFloat(miningDetail.LuckyValue)
-		n.QualityAdjPowerDelta24h = DecimalDiv1024x4Value(miningDetail.QualityAdjPowerDelta)
-		time.Sleep(5 * time.Second)
+		if !oneNode.Balance.IsZero() || oneNode.Balance.IsZero() && oneNode.LuckyValue24h.GreaterThan(decimal.Zero) {
+			log.Printf("获取节点%s的24hminer状态\n", oneNode.Node)
+			miningDetail := MiningStats(oneNode.Node)
+			n.BlocksMined24h = miningDetail.BlocksMined
+			n.WeightedBlocksMined24h = miningDetail.WeightedBlocksMined
+			n.TotalRewards24h = DecimalDiv18Value(miningDetail.TotalRewards)
+			n.LuckyValue24h = decimal.NewFromFloat(miningDetail.LuckyValue)
+			n.QualityAdjPowerDelta24h = DecimalDiv1024x4Value(miningDetail.QualityAdjPowerDelta)
+			time.Sleep(5 * time.Second)
 
-		/*log.Printf("获取节点%s的7dminer状态\n", oneNode.Node)
-		miningDetail = MiningStatsCycle(oneNode.Node, "7d")
-		n.BlocksMined7d = miningDetail.BlocksMined
-		n.WeightedBlocksMined7d = miningDetail.WeightedBlocksMined
-		n.TotalRewards7d = DecimalDiv18Value(miningDetail.TotalRewards)
-		n.LuckyValue7d = decimal.NewFromFloat(miningDetail.LuckyValue)
-		n.QualityAdjPowerDelta7d = DecimalDiv1024x4Value(miningDetail.QualityAdjPowerDelta)
-		time.Sleep(5 * time.Second)
+			/*log.Printf("获取节点%s的7dminer状态\n", oneNode.Node)
+			miningDetail = MiningStatsCycle(oneNode.Node, "7d")
+			n.BlocksMined7d = miningDetail.BlocksMined
+			n.WeightedBlocksMined7d = miningDetail.WeightedBlocksMined
+			n.TotalRewards7d = DecimalDiv18Value(miningDetail.TotalRewards)
+			n.LuckyValue7d = decimal.NewFromFloat(miningDetail.LuckyValue)
+			n.QualityAdjPowerDelta7d = DecimalDiv1024x4Value(miningDetail.QualityAdjPowerDelta)
+			time.Sleep(5 * time.Second)
 
-		log.Printf("获取节点%s的30dminer状态\n", oneNode.Node)
-		miningDetail = MiningStatsCycle(oneNode.Node, "30d")
-		n.BlocksMined30d = miningDetail.BlocksMined
-		n.WeightedBlocksMined30d = miningDetail.WeightedBlocksMined
-		n.TotalRewards30d = DecimalDiv18Value(miningDetail.TotalRewards)
-		n.LuckyValue30d = decimal.NewFromFloat(miningDetail.LuckyValue)
-		n.QualityAdjPowerDelta30d = DecimalDiv1024x4Value(miningDetail.QualityAdjPowerDelta)
-		time.Sleep(5 * time.Second)*/
-		//}
+			log.Printf("获取节点%s的30dminer状态\n", oneNode.Node)
+			miningDetail = MiningStatsCycle(oneNode.Node, "30d")
+			n.BlocksMined30d = miningDetail.BlocksMined
+			n.WeightedBlocksMined30d = miningDetail.WeightedBlocksMined
+			n.TotalRewards30d = DecimalDiv18Value(miningDetail.TotalRewards)
+			n.LuckyValue30d = decimal.NewFromFloat(miningDetail.LuckyValue)
+			n.QualityAdjPowerDelta30d = DecimalDiv1024x4Value(miningDetail.QualityAdjPowerDelta)
+			time.Sleep(5 * time.Second)*/
+		}
 
 		// 获取节点的控制地址 独立方法获取 独立表保存，一个节点存在多个控制地址
 		/*if len(n.ControlAddress) == 0 {
