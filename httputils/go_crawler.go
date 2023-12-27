@@ -264,6 +264,7 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 			continue
 		}
 		savePool = true
+		var needMysql bool
 
 		// 获取节点详细数据
 		log.Printf("获取节点%s信息\n", oneNode.Node)
@@ -271,16 +272,20 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 		//n.Node = oneNode.Node
 		time.Sleep(5 * time.Second)
 
-		// 获取节点可用余额数据
-		log.Printf("获取节点%s可用余额\n", oneNode.Node)
-		account := BalanceStats(oneNode.Node)
-		n.AvailableBalance = account.AvailableBalance
-		n.Height = account.Height
-		n.LastTime = time.Now() //TimestampToTime(account.LastTime)
-		//fmt.Printf("nodes=%+v\n", n)
-		time.Sleep(5 * time.Second)
+		if !n.Balance.IsZero() {
+			// 获取节点可用余额数据
+			log.Printf("获取节点%s可用余额\n", oneNode.Node)
+			account := BalanceStats(oneNode.Node)
+			n.AvailableBalance = account.AvailableBalance
+			n.Height = account.Height
+			n.LastTime = time.Now() //TimestampToTime(account.LastTime)
+			//fmt.Printf("nodes=%+v\n", n)
+			time.Sleep(5 * time.Second)
+		}
 
 		if !oneNode.Balance.IsZero() || oneNode.Balance.IsZero() && oneNode.LuckyValue24h.GreaterThan(decimal.Zero) {
+			needMysql = true
+
 			log.Printf("获取节点%s的24hminer状态\n", oneNode.Node)
 			miningDetail := MiningStats(oneNode.Node)
 			n.BlocksMined24h = miningDetail.BlocksMined
@@ -328,28 +333,29 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 			if n.LastDistributeTime.IsZero() {
 				n.LastDistributeTime = time.Now()
 			}
-			transAmount := services.SumReward(n, timeTag)
-			str := fmt.Sprintf("%f", transAmount)
-			log.Printf("上次分币%s之后一共转出%s", n.LastDistributeTime, str)
-			n.HasTransfer = n.HasTransfer.Add(DecimalValue(str))
+			if needMysql {
+				transAmount := services.SumReward(n, timeTag)
+				str := fmt.Sprintf("%f", transAmount)
+				log.Printf("上次分币%s之后一共转出%s", n.LastDistributeTime, str)
+				n.HasTransfer = n.HasTransfer.Add(DecimalValue(str))
 
-			// 获取节点的转入转出销毁数量
-			mapA := services.SumValueByType(n.Node, timeTag)
-			if value, ok := mapA["receive"]; ok {
-				n.ReceiveAmount = n.ReceiveAmount.Add(value)
-			}
-			if value, ok := mapA["burn"]; ok {
-				n.BurnAmount = n.BurnAmount.Add(value)
-			}
-			if value, ok := mapA["send"]; ok {
-				n.SendAmount = n.SendAmount.Add(value)
-			}
+				// 获取节点的转入转出销毁数量
+				mapA := services.SumValueByType(n.Node, timeTag)
+				if value, ok := mapA["receive"]; ok {
+					n.ReceiveAmount = n.ReceiveAmount.Add(value)
+				}
+				if value, ok := mapA["burn"]; ok {
+					n.BurnAmount = n.BurnAmount.Add(value)
+				}
+				if value, ok := mapA["send"]; ok {
+					n.SendAmount = n.SendAmount.Add(value)
+				}
 
-			s := services.LuckyBlock{}
-			var count int64
-			s.CountByNodeTimeTag(oneNode.Node, timeTag, &count)
-			n.TransferCount = n.TransferCount + count
-
+				s := services.LuckyBlock{}
+				var count int64
+				s.CountByNodeTimeTag(oneNode.Node, timeTag, &count)
+				n.TransferCount = n.TransferCount + count
+			}
 			n.TimeTag = timeTag
 			services.UpdateNode(n)
 			// 保存图表数据
