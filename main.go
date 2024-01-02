@@ -6,6 +6,7 @@ import (
 	"blog/config"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"time"
 )
 
@@ -16,8 +17,16 @@ func main() {
 	//timeToCreatDb()
 	//start()
 
+	mode := viper.GetString("mode")
+	ip := viper.GetString("ip")
+
+	gin.SetMode(mode)
+
 	r := gin.Default()
-	r.SetTrustedProxies([]string{"127.0.0.1", "localhost", "192.168.83.109"})
+	err := r.SetTrustedProxies([]string{"127.0.0.1", ip})
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	r.GET("/index-correct", apis.GetIndexCorrect)
 
