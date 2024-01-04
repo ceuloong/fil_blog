@@ -272,16 +272,14 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 		//n.Node = oneNode.Node
 		time.Sleep(5 * time.Second)
 
-		if !n.Balance.IsZero() {
-			// 获取节点可用余额数据
-			log.Printf("获取节点%s可用余额\n", oneNode.Node)
-			account := BalanceStats(oneNode.Node)
-			n.AvailableBalance = account.AvailableBalance
-			n.Height = account.Height
-			n.LastTime = time.Now() //TimestampToTime(account.LastTime)
-			//fmt.Printf("nodes=%+v\n", n)
-			time.Sleep(5 * time.Second)
-		}
+		// 获取节点可用余额数据
+		log.Printf("获取节点%s可用余额\n", oneNode.Node)
+		account := BalanceStats(oneNode.Node)
+		n.AvailableBalance = account.AvailableBalance
+		n.Height = account.Height
+		n.LastTime = time.Now() //TimestampToTime(account.LastTime)
+		//fmt.Printf("nodes=%+v\n", n)
+		time.Sleep(5 * time.Second)
 
 		if !oneNode.Balance.IsZero() || oneNode.Balance.IsZero() && oneNode.LuckyValue24h.GreaterThan(decimal.Zero) {
 			needMysql = true
