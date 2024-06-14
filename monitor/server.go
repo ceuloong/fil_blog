@@ -1,0 +1,147 @@
+package client
+
+import (
+	"encoding/json"
+	"flag"
+	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/spf13/viper"
+	"log"
+	"net/http"
+)
+
+var serverAddr = flag.String("server", "localhost:8083", "http service address")
+
+var upGrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	// 解决跨域问题
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+} // use default options
+
+func echo(w http.ResponseWriter, r *http.Request) {
+	c, err := upGrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer c.Close()
+	for {
+		mt, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+
+		log.Printf("recv: %s, type: %v \n", message, mt)
+		var msg Message
+		json.Unmarshal(message, &msg)
+
+		log.Printf("msg: %v", msg)
+		//err = c.WriteMessage(mt, message)
+		//if err != nil {
+		//	log.Println("write:", err)
+		//	break
+		//}
+	}
+}
+
+//func home(w http.ResponseWriter, r *http.Request) {
+//	homeTemplate.Execute(w, "ws://"+r.Host+"/echo")
+//}
+
+func RunTestServer() {
+	//flag.Parse()
+	log.SetFlags(0)
+	http.HandleFunc("/echo", echo)
+	//http.HandleFunc("/", home)
+	host := viper.GetString("monitor.host")
+	port := viper.GetInt("monitor.port")
+	url := fmt.Sprintf("%s:%d", host, port)
+	fmt.Println("----moniter url--------", url)
+	//var serverAddr = flag.String("server", url, "http service address")
+	log.Fatal(http.ListenAndServe(url, nil))
+}
+
+//
+//var homeTemplate = template.Must(template.New("").Parse(`
+//<!DOCTYPE html>
+//<html>
+//<head>
+//<meta charset="utf-8">
+//<script>
+//window.addEventListener("load", function(evt) {
+//
+//    var output = document.getElementById("output");
+//    var input = document.getElementById("input");
+//    var ws;
+//
+//    var print = function(message) {
+//        var d = document.createElement("div");
+//        d.textContent = message;
+//        output.appendChild(d);
+//        output.scroll(0, output.scrollHeight);
+//    };
+//
+//    document.getElementById("open").onclick = function(evt) {
+//        if (ws) {
+//            return false;
+//        }
+//        ws = new WebSocket("{{.}}");
+//        ws.onopen = function(evt) {
+//            print("OPEN");
+//        }
+//        ws.onclose = function(evt) {
+//            print("CLOSE");
+//            ws = null;
+//        }
+//        ws.onmessage = function(evt) {
+//            print("RESPONSE: " + evt.data);
+//        }
+//        ws.onerror = function(evt) {
+//            print("ERROR: " + evt.data);
+//        }
+//        return false;
+//    };
+//
+//    document.getElementById("send").onclick = function(evt) {
+//        if (!ws) {
+//            return false;
+//        }
+//        print("SEND: " + input.value);
+//        ws.send(input.value);
+//        return false;
+//    };
+//
+//    document.getElementById("close").onclick = function(evt) {
+//        if (!ws) {
+//            return false;
+//        }
+//        ws.close();
+//        return false;
+//    };
+//
+//});
+//</script>
+//</head>
+//<body>
+//<table>
+//<tr><td valign="top" width="50%">
+//<p>Click "Open" to create a connection to the server,
+//"Send" to send a message to the server and "Close" to close the connection.
+//You can change the message and send multiple times.
+//<p>
+//<form>
+//<button id="open">Open</button>
+//<button id="close">Close</button>
+//<p><input id="input" type="text" value="Hello world!">
+//<button id="send">Send</button>
+//</form>
+//</td><td valign="top" width="50%">
+//<div id="output" style="max-height: 70vh;overflow-y: scroll;"></div>
+//</td></tr></table>
+//</body>
+//</html>
+//`))
