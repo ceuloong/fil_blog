@@ -21,7 +21,7 @@ func GetLastOneByTime(node models.Nodes, time time.Time) models.NodesChart {
 	return lastOne
 }
 
-func SaveNodesChart(nodes models.Nodes) {
+func GetNodesChart(nodes models.Nodes) models.NodesChart {
 	currentTime := time.Now()
 	lastDay := currentTime.AddDate(0, 0, -1)
 	lastOne := GetLastOneByTime(nodes, lastDay)
@@ -69,6 +69,13 @@ func SaveNodesChart(nodes models.Nodes) {
 		LastMonthSendAmount:          lastMonthLastOne.SendAmount,
 		TimeTag:                      nodes.TimeTag,
 	}
+
+	return nodesChart
+}
+
+func SaveNodesChart(nodes models.Nodes) {
+
+	nodesChart := GetNodesChart(nodes)
 
 	InsertNodesChart(nodesChart)
 }

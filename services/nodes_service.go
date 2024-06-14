@@ -26,6 +26,7 @@ func FindAllNode(node string) []models.Nodes {
 	} else {
 		tx.Where("status > 0")
 	}
+	//tx.Where("balance > 0")
 	tx.Order("id").Find(&nodes)
 
 	return nodes

@@ -31,6 +31,21 @@ func TimeAddMinutes(now time.Time, minute int) time.Time {
 	return m1
 }
 
+// GetLastMonthTime 获取当前时间前一个月的时间
+func GetLastMonthTime() time.Time {
+	// 获取当前时间
+	now := time.Now()
+
+	// 获取当前时间的年份和月份
+	year, month, day := now.Date()
+
+	// 计算上个月的时间（处理跨年）
+	if month == 1 {
+		return time.Date(year-1, 12, day, now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), now.Location())
+	}
+	return time.Date(year, month-1, day, now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), now.Location())
+}
+
 func Utc0Plus8Time(now time.Time) time.Time {
 	h, _ := time.ParseDuration("-1h")
 	h1 := now.Add(8 * h)

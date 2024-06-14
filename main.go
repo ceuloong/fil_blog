@@ -4,6 +4,7 @@ import (
 	"blog/apis"
 	"blog/common"
 	"blog/config"
+	client "blog/monitor"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -28,13 +29,19 @@ func main() {
 		fmt.Println(err)
 	}
 
-	r.GET("/index-correct", apis.GetIndexCorrect)
+	go func() {
+		client.RunTestServer()
+	}()
+
+	//r.GET("/index-correct", apis.GetIndexCorrect)
 
 	r.GET("/index", apis.GetIndex)
 
 	r.GET("/update-addresses", apis.UpdateAddresses)
 
 	r.GET("/update-balance", apis.UpdateAddressesBalance)
+
+	r.GET("/hand-update", apis.HandUpdate)
 
 	r.GET("/tron", apis.TronAddress)
 

@@ -21,10 +21,11 @@ type Nodes struct {
 	Status                  int             `gorm:"type:int"`
 	Type                    int             `gorm:"type:int"`
 	LastTime                time.Time       `gorm:"type:datetime"`
+	LastHandTime            *time.Time      `gorm:"type:datetime"`
 	RewardValue             decimal.Decimal `gorm:"type:decimal(20, 8)"`
 	WeightedBlocks          int             `gorm:"type:int"`
-	QualityAdjPower         decimal.Decimal `gorm:"type:decimal(20, 4)",有效算力`
-	PowerUnit               string          `gorm:"type:varchar(50)",算力单位`
+	QualityAdjPower         decimal.Decimal `gorm:"type:decimal(20, 4)" 有效算力`
+	PowerUnit               string          `gorm:"type:varchar(50)" comment:"算力单位"`
 	PowerPoint              decimal.Decimal `gorm:"type:decimal(10,3)",算力占比`
 	PowerGrade              string          `gorm:"type:varchar(50)",算力排名`
 	SectorSize              string          `gorm:"type:varchar(50)",扇区大小`
@@ -57,6 +58,8 @@ type Nodes struct {
 	SendAmount              decimal.Decimal `gorm:"type:decimal(20, 8)" 节点发送数量`
 	TimeTag                 int64           `gorm:"type:bigint" 时间标签`
 	TransferCount           int64           `gorm:"type:int" 转账交易数`
+	RealCount               int64           `gorm:"type:int" 实际交易数量`
+	DeptId                  int             `json:"deptId"`
 }
 
 func (table *Nodes) TableName() string {

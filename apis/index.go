@@ -111,3 +111,15 @@ func TronAddress(c *gin.Context) {
 		"message": "tron Success!",
 	})
 }
+
+// HandUpdate
+// @Success 200 {string} welcome
+//
+//	@Router /hand-update [get]
+func HandUpdate(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "HandUpdate Success!",
+	})
+	httputils.HandUpdate("")
+
+}

@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../AICloud/.idea/AICloud.iml" filepath="$PROJECT_DIR$/../AICloud/.idea/AICloud.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/blog.iml" filepath="$PROJECT_DIR$/.idea/blog.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../ginchat/.idea/ginchat.iml" filepath="$PROJECT_DIR$/../ginchat/.idea/ginchat.iml" />
-      <module fileurl="file://$USER_HOME$/GolandProjects/learnGo/.idea/learnGo.iml" filepath="$USER_HOME$/GolandProjects/learnGo/.idea/learnGo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../lotus/.idea/lotus.iml" filepath="$PROJECT_DIR$/../lotus/.idea/lotus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../fil_blog/.idea/fil_blog.iml" filepath="$PROJECT_DIR$/../fil_blog/.idea/fil_blog.iml" />
     </modules>
   </component>
 </project>

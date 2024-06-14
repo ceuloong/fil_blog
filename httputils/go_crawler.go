@@ -89,6 +89,9 @@ func GetNodeDetailByAddress(nodes models.Nodes) models.Nodes {
 			if text == "账户余额" {
 				balance := strings.TrimSpace(link.FindNextElementSibling().Text())
 				nodes.Balance = DecimalValue(FormaterString(strings.Split(balance, " ")[0]))
+				if strings.Split(balance, " ")[1] != "FIL" {
+					nodes.Balance = decimal.Zero
+				}
 				continue
 			}
 			// 可用余额页面抓取有问题，采用请求的方式获得
@@ -281,7 +284,7 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 		//fmt.Printf("nodes=%+v\n", n)
 		time.Sleep(5 * time.Second)
 
-		if !oneNode.Balance.IsZero() || oneNode.Balance.IsZero() && oneNode.LuckyValue24h.GreaterThan(decimal.Zero) {
+		if !n.Balance.IsZero() || oneNode.Balance.IsZero() && oneNode.LuckyValue24h.GreaterThan(decimal.Zero) {
 			needMysql = true
 
 			log.Printf("获取节点%s的24hminer状态\n", oneNode.Node)
@@ -349,10 +352,10 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 					n.SendAmount = n.SendAmount.Add(value)
 				}
 
-				s := services.LuckyBlock{}
-				var count int64
-				s.CountByNodeTimeTag(oneNode.Node, timeTag, &count)
-				n.TransferCount = n.TransferCount + count
+				//s := services.LuckyBlock{}
+				//var count int64
+				//s.CountByNodeTimeTag(oneNode.Node, timeTag, &count)
+				n.TransferCount = oneNode.RealCount // 对齐交易的数量
 			}
 			n.TimeTag = timeTag
 			services.UpdateNode(n)
@@ -390,8 +393,55 @@ func savePoolChart() {
 		poolChart.PowerPoint = poolChart.PowerPoint.Add(n.PowerPoint)
 		poolChart.ControlBalance = poolChart.ControlBalance.Add(n.ControlBalance)
 		poolChart.RewardValue = poolChart.RewardValue.Add(n.RewardValue)
+
+		//nodesChart := services.GetNodesChart(n)
+
 	}
 	poolChart.LastTime = time.Now()
 	poolChart.PowerUnit = "PiB"
 	services.SavePoolChart(poolChart)
+}
+
+func HandUpdate(nodeParam string) {
+	nodes := services.FindAllNode(nodeParam)
+
+	var contents string
+
+	for _, oneNode := range nodes {
+		//if TimeAddMinutes(oneNode.LastHandTime, 30)
+		if oneNode.LastHandTime.Add(time.Minute*30).Compare(time.Now()) > 0 || oneNode.Balance.IsZero() {
+			continue
+		}
+		// 获取节点详细数据
+		log.Printf("获取节点%s信息\n", oneNode.Node)
+		n := GetNodeDetailByAddress(oneNode)
+		//n.Node = oneNode.Node
+		time.Sleep(5 * time.Second)
+
+		// 获取节点可用余额数据
+		log.Printf("获取节点%s可用余额\n", oneNode.Node)
+		account := BalanceStats(oneNode.Node)
+		n.AvailableBalance = account.AvailableBalance
+		n.Height = account.Height
+		now := time.Now()
+		n.LastHandTime = &now //TimestampToTime(account.LastTime)
+		//fmt.Printf("nodes=%+v\n", n)
+		time.Sleep(5 * time.Second)
+
+		services.UpdateNode(n)
+
+		if n.SectorError > oneNode.SectorError && (n.SectorError-oneNode.SectorError > 100) {
+			contents += fmt.Sprintf("节点：%s 当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d。<br/>", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError)
+		}
+	}
+	if len(contents) > 0 {
+		var msg models.Msg
+		msg.Title = "扇区错误"
+		msg.Content = contents
+		msg.CreateTime = time.Now()
+		msg.SendStatus = 0
+		services.InsertMsg(msg)
+	}
+
+	log.Printf("手动更新节点余额成功。")
 }

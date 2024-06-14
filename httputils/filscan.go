@@ -220,18 +220,17 @@ func UpdateAddresses(msig string) {
 					CreateTime:       time.Now(),
 					LastTransferTime: time.Now(),
 				}
-				oneNode.ControlAddress = controllersAddress
 
 				filAddresses = append(filAddresses, address)
-				if oneNode.CreateTime.IsZero() {
-					oneNode.CreateTime = time.Now()
-					oneNode.LastTime = time.Now()
-				}
 			}
 
 			if len(filAddresses) > 0 {
 				services.InsertAddress(filAddresses)
 
+				if oneNode.CreateTime.IsZero() {
+					oneNode.CreateTime = time.Now()
+					oneNode.LastTime = time.Now()
+				}
 				services.UpdateNode(oneNode)
 			}
 		}
@@ -245,17 +244,9 @@ func UpdateAddressesBalance(timeTag int64, addrParam string) {
 
 	var nodeM = make(map[string]decimal.Decimal)
 	for _, addr := range addresses {
-		account := BalanceControlById(addr.Address)
-		time.Sleep(5 * time.Second)
-
-		addr.Balance = account.AccountBalance
-		if len(addr.AccountId) == 0 {
-			addr.AccountId = account.AccountId
-		}
-		addr.CreateTime = account.CreateTime
-		addr.AccountType = account.AccountType
-		addr.LastTransferTime = account.LastTransferTime
-		addr.Nonce = account.Nonce
+		//if addr.LastTransferTime.Compare(GetLastMonthTime()) < 0 {
+		//	continue
+		//}
 
 		realTimeTag := timeTag
 		var count int64
@@ -266,6 +257,7 @@ func UpdateAddressesBalance(timeTag int64, addrParam string) {
 			}
 		}
 
+		var needRequestUrl bool = false
 		// 获取地址的转入转出销毁数量
 		mapA := services.SumValueByType(addr.AccountId, realTimeTag)
 		//addr.ReceiveAmount = mapA["receive"]
@@ -275,17 +267,21 @@ func UpdateAddressesBalance(timeTag int64, addrParam string) {
 		var burnNew decimal.Decimal
 		if value, ok := mapA["receive"]; ok {
 			addr.ReceiveAmount = addr.ReceiveAmount.Add(value)
+			needRequestUrl = true
 		}
 		if value, ok := mapA["burn-fee"]; ok {
 			addr.BurnAmount = addr.BurnAmount.Add(value)
 			burnNew = burnNew.Add(value)
+			needRequestUrl = true
 		}
 		if value, ok := mapA["miner-fee"]; ok {
 			addr.BurnAmount = addr.BurnAmount.Add(value)
 			burnNew = burnNew.Add(value)
+			needRequestUrl = true
 		}
 		if value, ok := mapA["send"]; ok {
 			addr.SendAmount = addr.SendAmount.Add(value)
+			needRequestUrl = true
 		}
 
 		if value, ok := nodeM[addr.Node]; ok {
@@ -293,13 +289,26 @@ func UpdateAddressesBalance(timeTag int64, addrParam string) {
 		} else {
 			nodeM[addr.Node] = burnNew
 		}
+		if needRequestUrl {
+			account := BalanceControlById(addr.Address)
+			time.Sleep(5 * time.Second)
 
-		s.CountByNodeTimeTag(addr.AccountId, timeTag, &count)
-		addr.TransferCount = addr.TransferCount + count
+			addr.Balance = account.AccountBalance
+			if len(addr.AccountId) == 0 {
+				addr.AccountId = account.AccountId
+			}
+			addr.CreateTime = account.CreateTime
+			addr.AccountType = account.AccountType
+			addr.LastTransferTime = account.LastTransferTime
+			addr.Nonce = account.Nonce
 
-		addr.TimeTag = timeTag
+			//s.CountByNodeTimeTag(addr.AccountId, timeTag, &count)
+			addr.TransferCount = addr.RealCount
 
-		services.UpdateBalance(addr)
+			addr.TimeTag = timeTag
+
+			services.UpdateBalance(addr)
+		}
 	}
 
 	if len(nodeM) > 0 {

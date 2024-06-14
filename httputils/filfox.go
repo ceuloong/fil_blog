@@ -68,6 +68,7 @@ func Start(timeTag int64, nodeParam string) {
 }
 
 func pageNode(nodes []models.Nodes, p int, pg int, timeTag int64) {
+	s := services.LuckyBlock{}
 	var newNodes []SpiderNode
 	var updateNodes []SpiderNode
 	//var m = make(map[string]int)
@@ -89,22 +90,25 @@ func pageNode(nodes []models.Nodes, p int, pg int, timeTag int64) {
 
 		var count int64
 		count = nodes[i].TransferCount
-
 		if count == 0 {
-			newNodes = append(newNodes, node)
-		} else {
-			if len(newNodes) > 0 {
-				continue
-			}
-			total := getTotalNum(node.Node) // 获取全部记录数量
-			services.UpdateRealCount(total, node.Node)
-			page := pageCount(total-int(count), pageSize)
-			if page <= 0 {
-				continue
-			}
-			node.Page = page
-			updateNodes = append(updateNodes, node)
+			s.CountByNode(node.Node, &count)
 		}
+
+		//if count == 0 {
+		//	newNodes = append(newNodes, node)
+		//} else {
+		//	if len(newNodes) > 0 {
+		//		continue
+		//	}
+		total := getTotalNum(node.Node) // 获取全部记录数量
+		services.UpdateRealCount(total, node.Node)
+		page := pageCount(total-int(count), pageSize)
+		if page <= 0 {
+			continue
+		}
+		node.Page = page
+		updateNodes = append(updateNodes, node)
+		//}
 	}
 
 	// 抓取控制地址记录
@@ -204,7 +208,7 @@ func newNodeSave(nodes []SpiderNode) {
 	for i := 0; i < len(nodes); i++ {
 		go func(i int) {
 			defer wg.Done()
-			GetHttpHtml(nodes[i])
+			GetHttpHtmlNew(nodes[i])
 		}(i)
 	}
 	wg.Wait()

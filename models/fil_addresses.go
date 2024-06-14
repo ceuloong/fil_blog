@@ -23,6 +23,7 @@ type FilAddresses struct {
 	BurnAmount       decimal.Decimal `gorm:"type:decimal(20, 8)" 节点销毁数量`
 	SendAmount       decimal.Decimal `gorm:"type:decimal(20, 8)" 节点发送数量`
 	TransferCount    int64           `gorm:"type:int" 转账交易数`
+	RealCount        int64           `gorm:"type:int" 实际交易数`
 	TimeTag          int64           `gorm:"type:bigint" 时间标签`
 }
 
