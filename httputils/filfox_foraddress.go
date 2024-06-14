@@ -51,25 +51,25 @@ func pageAddress(nodes []models.FilAddresses, p int, pg int, timeTag int64) {
 			s.CountByNode(node.Node, &count)
 		}
 
-		if count == 0 && len(newNodes) < 5 {
-			newNodes = append(newNodes, node)
-			if len(newNodes) >= 5 {
-				break
-			}
-		} else {
-			if len(newNodes) > 0 {
-				continue
-			}
-			total := getTotalNum(node.Node) // 获取全部记录数量
-			services.UpdateAddrRealCount(total, node.Node)
-			log.Printf("node:%s的real_count:%d, transfer_count:%d\n", node.Node, total, count)
-			page := pageCount(total-int(count), pageSize)
-			if page == 0 {
-				continue
-			}
-			node.Page = page
-			updateNodes = append(updateNodes, node)
+		//if count == 0 && len(newNodes) < 5 {
+		//	newNodes = append(newNodes, node)
+		//	if len(newNodes) >= 5 {
+		//		break
+		//	}
+		//} else {
+		//	if len(newNodes) > 0 {
+		//		continue
+		//	}
+		total := getTotalNum(node.Node) // 获取全部记录数量
+		services.UpdateAddrRealCount(total, node.Node)
+		log.Printf("node:%s的real_count:%d, transfer_count:%d\n", node.Node, total, count)
+		page := pageCount(total-int(count), pageSize)
+		if page == 0 {
+			continue
 		}
+		node.Page = page
+		updateNodes = append(updateNodes, node)
+		//}
 	}
 
 	if len(newNodes) > 0 { // 新节点首次抓数据
