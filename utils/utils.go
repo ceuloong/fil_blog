@@ -1,11 +1,12 @@
-package httputils
+package utils
 
 import (
-	"github.com/shopspring/decimal"
 	"math"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 func TimestampToTime(t int64) time.Time {
@@ -87,9 +88,17 @@ func DecimalDivValue(str string, wei int) decimal.Decimal {
 	return v
 }
 
+// DecimalDiv1024x4Value 除以1024的4次方  TB
 func DecimalDiv1024x4Value(str string) decimal.Decimal {
 	value, _ := decimal.NewFromString(str)
 	v := value.Div(decimal.NewFromFloat(math.Pow(1024, 4))).Round(2)
+	return v
+}
+
+// DecimalDiv1024x4Value 除以1024的4次方  TB
+func DecimalDiv1024xnValue(str string, n float64) decimal.Decimal {
+	value, _ := decimal.NewFromString(str)
+	v := value.Div(decimal.NewFromFloat(math.Pow(1024, n))).Round(2)
 	return v
 }
 

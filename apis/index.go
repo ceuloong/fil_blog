@@ -2,11 +2,14 @@ package apis
 
 import (
 	"blog/blockchain"
+	"blog/filutils"
 	"blog/httpcorrect"
 	"blog/httputils"
-	"github.com/gin-gonic/gin"
+	"blog/ticker"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GetIndexCorrect(c *gin.Context) {
@@ -39,11 +42,8 @@ func GetIndex(c *gin.Context) {
 	timeTag := time.Now().Unix()
 	httputils.Start(timeTag, node)
 
-	//httputils.UpdateAddresses("")
 	//
-	httputils.UpdateNodes(node, timeTag)
-	//
-	//httputils.UpdateAddressesBalance()
+	filutils.UpdateNodes(node, timeTag)
 }
 
 // UpdateFilNodes
@@ -122,4 +122,20 @@ func HandUpdate(c *gin.Context) {
 	})
 	httputils.HandUpdate("")
 
+}
+
+func Ticker(c *gin.Context) {
+	getTicker := ticker.GetTicker()
+	c.JSON(200, gin.H{
+		"message": getTicker,
+	})
+}
+
+func NodeDetails(c *gin.Context) {
+	addr := c.Query("node")
+	println("addr:" + addr)
+	details := filutils.NodeDetails(addr)
+	c.JSON(200, gin.H{
+		"message": details,
+	})
 }

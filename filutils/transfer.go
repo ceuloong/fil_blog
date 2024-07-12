@@ -327,7 +327,7 @@ func GetHttpHtml(node SpiderNode) {
 // 获取全部的区块数量
 func getTotalNum(node string) int {
 	url := `https://filfox.info/api/v1/address/` + node + `/transfers?pageSize=20&page=0`
-	
+
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

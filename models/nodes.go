@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/shopspring/decimal"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type Nodes struct {
@@ -37,16 +38,19 @@ type Nodes struct {
 	ControlAddress          string          `gorm:"type:varchar(255)"`
 	ControlBalance          decimal.Decimal `gorm:"type:decimal(20,8)"`
 	HasTransfer             decimal.Decimal `gorm:"type:decimal(20,8)"`
+	MiningEfficiency        decimal.Decimal `gorm:"type:decimal(20,8)"`
 	BlocksMined24h          int             `gorm:"type:int" 24h报块数量`
 	WeightedBlocksMined24h  int             `gorm:"type:int" 24h出块份数`
 	TotalRewards24h         decimal.Decimal `gorm:"type:decimal(20, 8)" 24h出块奖励金额`
 	LuckyValue24h           decimal.Decimal `gorm:"type:decimal(20, 8)" 24hLucky值`
 	QualityAdjPowerDelta24h decimal.Decimal `gorm:"type:decimal(20, 4)" 24h算力增量`
+	MiningEfficiency7d      decimal.Decimal `gorm:"type:decimal(20,8)"`
 	BlocksMined7d           int             `gorm:"type:int" 7d报块数量`
 	WeightedBlocksMined7d   int             `gorm:"type:int" 7d出块份数`
 	TotalRewards7d          decimal.Decimal `gorm:"type:decimal(20, 8)" 7d出块奖励金额`
 	LuckyValue7d            decimal.Decimal `gorm:"type:decimal(20, 8)" 7dLucky值`
 	QualityAdjPowerDelta7d  decimal.Decimal `gorm:"type:decimal(20, 4)" 7d算力增量`
+	MiningEfficiency30d     decimal.Decimal `gorm:"type:decimal(20,8)"`
 	BlocksMined30d          int             `gorm:"type:int" 月报块数量`
 	WeightedBlocksMined30d  int             `gorm:"type:int" 月出块份数`
 	TotalRewards30d         decimal.Decimal `gorm:"type:decimal(20, 8)" 月出块奖励金额`

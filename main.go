@@ -45,9 +45,11 @@ func main() {
 
 	r.GET("/tron", apis.TronAddress)
 
+	r.GET("/ticker", apis.Ticker)
+	r.GET("/node", apis.NodeDetails)
+
 	r.Run(":3000")
 
-	//httputils.UpdateAddressesBalance(1700640108, "")
 }
 
 func main1() {

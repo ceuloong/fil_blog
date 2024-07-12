@@ -1,13 +1,15 @@
 package common
 
 import (
+	"blog/models"
 	"fmt"
-	"github.com/spf13/viper"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm/logger"
 	"log"
 	"os"
 	"time"
+
+	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm/logger"
 
 	// 看清楚引入包，包的差异存在方法差异
 	"gorm.io/gorm"
@@ -54,8 +56,8 @@ func InitDB() *gorm.DB {
 	}
 	fmt.Println("MySQL inited ...")
 	// gorm 自动创建表,需要放入model层中的模型，比如 User{}
-	//db.Set("gorm:table_options", "charset=utf8mb4").
-	//	AutoMigrate(&models.TronScan{})
+	db.Set("gorm:table_options", "charset=utf8mb4").
+		AutoMigrate(&models.Nodes{}, &models.LuckyBlock{}, &models.NodesChart{})
 
 	// 进行赋值 否则会空指针
 	DB = db
