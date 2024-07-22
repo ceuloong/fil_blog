@@ -30,10 +30,10 @@ type Result struct {
 }
 
 // UpdateDetail 结构体
-type UpdateDetail struct { //
-	services.LuckyBlock
-	page int
-}
+// type UpdateDetail struct { //
+// 	services.LuckyBlock
+// 	page int
+// }
 
 type SpiderNode struct {
 	Node     string
@@ -88,8 +88,8 @@ func pageNode(nodes []models.Nodes, p int, pg int, timeTag int64) {
 			TimeTag:  timeTag,
 		}
 
-		var count int64
-		count = nodes[i].TransferCount
+		//var count int64
+		count := nodes[i].TransferCount
 		if count == 0 {
 			s.CountByNode(node.Node, &count)
 		}
@@ -180,6 +180,7 @@ func updateNodeNew(nodes []SpiderNode) {
 	}
 }*/
 
+/**
 func getSpiders(node SpiderNode, block services.LuckyBlock, page int, needToSave []models.LuckyBlock) []models.LuckyBlock {
 	time.Sleep(1 * time.Second)
 	total, spiders := Spider(node, page, pageSize, 0)
@@ -197,7 +198,7 @@ func getSpiders(node SpiderNode, block services.LuckyBlock, page int, needToSave
 	//	return needToSave
 	//}
 	return getSpiders(node, block, page+1, needToSave)
-}
+}*/
 
 // 节点首次抓取数据
 func newNodeSave(nodes []SpiderNode) {
@@ -243,7 +244,7 @@ func GetHttpHtmlNew(node SpiderNode) {
 				if len(totalBlock) > 0 {
 					break
 				}
-				log.Printf("节点%s查询%d页时，数量为0，for i=%d\n", node, page, i)
+				log.Printf("节点%s查询%d页时，数量为0，for i=%d\n", node.Node, page, i)
 			}
 		}
 		if len(totalBlock) > 0 {

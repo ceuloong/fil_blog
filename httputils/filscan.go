@@ -5,12 +5,12 @@ import (
 	"blog/services"
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"github.com/shopspring/decimal"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 /**
@@ -106,7 +106,7 @@ type AccountBasic struct {
 // BalanceControlById 获取账户余额数组
 func BalanceControlById(addr string) AccountBasic {
 	client := &http.Client{}
-	url := fmt.Sprintf("https://api-v2.filscan.io/api/v1/AccountInfoByID")
+	url := "https://api-v2.filscan.io/api/v1/AccountInfoByID"
 	jsonStr := []byte(`{ "account_id": "` + addr + `"}`)
 	reqSpider, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	if err != nil {
@@ -151,7 +151,7 @@ func BalanceControlById(addr string) AccountBasic {
 // AccountInfoById 獲取節點的地址信息
 func AccountInfoById(node string) AccountAddress {
 	client := &http.Client{}
-	url := fmt.Sprintf("https://api-v2.filscan.io/api/v1/AccountInfoByID")
+	url := "https://api-v2.filscan.io/api/v1/AccountInfoByID"
 	jsonStr := []byte(`{ "account_id": "` + node + `"}`)
 	reqSpider, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	if err != nil {
