@@ -14,9 +14,6 @@ func init() {
 }
 
 func StartAddress(timeTag int64, addrParam string) {
-	// f17225euatkghukeyu6exm6j72fw5aneiiyapotbq  f1emjr5wnycomu7dgbt6aiaiir6rn53ggioiou56a
-	//f01807413 f01822659 f01845913  f01874748  f01834260  f01899511
-	//nodes := []string{"f01807413", "f01822659", "f01845913", "f01874748", "f01834260", "f01899511"}
 	nodes := services.FindAllAddress(addrParam)
 	pg := 5
 	page := pageCount(len(nodes), pg)
@@ -45,8 +42,8 @@ func pageAddress(nodes []models.FilAddresses, p int, pg int, timeTag int64) {
 			TimeTag:  timeTag,
 		}
 
-		var count int64
-		count = nodes[i].TransferCount
+		//var count int64
+		count := nodes[i].TransferCount
 		if count == 0 {
 			s.CountByNode(node.Node, &count)
 		}

@@ -98,8 +98,8 @@ func DecimalDiv1024x4Value(str string) decimal.Decimal {
 func FloatValue(str string) float64 {
 	floatValue, err := strconv.ParseFloat(str, 64)
 	if err != nil {
-		panic(err)
 		floatValue = 0
+		panic(err)
 	}
 	return floatValue
 }
