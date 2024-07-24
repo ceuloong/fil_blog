@@ -3,73 +3,19 @@ package services
 import (
 	"blog/common"
 	"blog/models"
-	"gorm.io/gorm"
-	"log"
 	"reflect"
+
+	"gorm.io/gorm"
 )
 
-func Insert(block []models.LuckyBlock) *gorm.DB {
-	return common.DB.CreateInBatches(&block, 100)
+type BlockService struct {
 }
 
-type LuckyBlock struct {
-	Node     string
-	Height   int64
-	NodeFrom string
-	NodeTo   string
-	Message  string
-	Type     string
+func (bs *BlockService) Insert(block models.Block) *gorm.DB {
+	return common.DB.Save(&block)
 }
 
-// FindLastByNode 根据返回的数组判断是否已存在
-func FindLastByNode(node string) LuckyBlock {
-	var db = common.DB
-	var lastBlock LuckyBlock
-	db.Model(&models.LuckyBlock{}).Where("node = ?", node).Order("id desc").Limit(1).Find(&lastBlock)
-	if lastBlock == (LuckyBlock{}) {
-		db.Model(&models.LuckyBlockBak{}).Where("node = ?", node).Order("id desc").Limit(1).Find(&lastBlock)
-	}
-
-	return lastBlock
-}
-
-// CountByNode 根据返回的数组判断是否已存在
-func (e *LuckyBlock) CountByNode(node string, count *int64) error {
-	var db = common.DB
-
-	err := db.Model(&models.LuckyBlock{}).Where("node = ?", node).Count(count).Error
-	if err != nil {
-		log.Printf("FilNodesService GetPage error:%s \r\n", err)
-		return err
-	}
-	return nil
-}
-
-// CountByNodeBak 根据返回的数组判断是否已存在
-func (e *LuckyBlock) CountByNodeBak(node string, count *int64) error {
-	var db = common.DB
-
-	err := db.Model(&models.LuckyBlockBak{}).Where("node = ?", node).Count(count).Error
-	if err != nil {
-		log.Printf("FilNodesService GetPage error:%s \r\n", err)
-		return err
-	}
-	return nil
-}
-
-// CountByNodeTimeTag 根据返回的数组判断是否已存在
-func (e *LuckyBlock) CountByNodeTimeTag(node string, timeTag int64, count *int64) error {
-	var db = common.DB
-
-	err := db.Model(&models.LuckyBlock{}).Where("node = ? AND time_tag = ?", node, timeTag).Count(count).Error
-	if err != nil {
-		log.Printf("FilNodesService GetPage error:%s \r\n", err)
-		return err
-	}
-	return nil
-}
-
-func NeedToSave(lastBlock LuckyBlock, spiders []models.LuckyBlock) []models.LuckyBlock {
+func (bs *BlockService) NeedToSave(lastBlock LuckyBlock, spiders []models.LuckyBlock) []models.LuckyBlock {
 	// 已保存的最新区块的高度大于当前抓取的最新记录，说明已保存过，返回
 	if lastBlock.Height > spiders[len(spiders)-1].Height {
 		return nil
@@ -105,17 +51,4 @@ func NeedToSave(lastBlock LuckyBlock, spiders []models.LuckyBlock) []models.Luck
 	}
 
 	return needSaves
-}
-
-// 封装对象成临时
-func spiderToTmp(spider models.LuckyBlock) LuckyBlock {
-	var tmp LuckyBlock
-	tmp.Node = spider.Node
-	tmp.Height = spider.Height
-	tmp.NodeFrom = spider.NodeFrom
-	tmp.NodeTo = spider.NodeTo
-	tmp.Message = spider.Message
-	tmp.Type = spider.Type
-
-	return tmp
 }

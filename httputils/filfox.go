@@ -54,9 +54,6 @@ func init() {
 }
 
 func Start(timeTag int64, nodeParam string) {
-	// f17225euatkghukeyu6exm6j72fw5aneiiyapotbq  f1emjr5wnycomu7dgbt6aiaiir6rn53ggioiou56a
-	//f01807413 f01822659 f01845913  f01874748  f01834260  f01899511
-	//nodes := []string{"f01807413", "f01822659", "f01845913", "f01874748", "f01834260", "f01899511"}
 	nodes := services.FindAllNode(nodeParam)
 
 	pg := 5

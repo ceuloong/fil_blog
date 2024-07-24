@@ -2,8 +2,10 @@ package ticker
 
 import (
 	"blog/httputils"
+	"blog/redis"
 	"encoding/json"
 	"log"
+	"time"
 )
 
 type Ticker struct {
@@ -25,4 +27,10 @@ func GetTicker() Ticker {
 	_ = json.Unmarshal(bodyText, &result) //byte to json
 
 	return result
+}
+
+func SetTickerToRedis() {
+	ticker := GetTicker()
+
+	redis.SetRedis("ticker", ticker.Data.NewlyPrice, time.Hour)
 }

@@ -1,7 +1,6 @@
 package common
 
 import (
-	"blog/models"
 	"fmt"
 	"log"
 	"os"
@@ -56,8 +55,8 @@ func InitDB() *gorm.DB {
 	}
 	fmt.Println("MySQL inited ...")
 	// gorm 自动创建表,需要放入model层中的模型，比如 User{}
-	db.Set("gorm:table_options", "charset=utf8mb4").
-		AutoMigrate(&models.Nodes{}, &models.LuckyBlock{}, &models.NodesChart{})
+	// db.Set("gorm:table_options", "charset=utf8mb4").
+	// 	AutoMigrate(&models.BlockStats{})
 
 	// 进行赋值 否则会空指针
 	DB = db

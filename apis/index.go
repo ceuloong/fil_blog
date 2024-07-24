@@ -120,14 +120,22 @@ func HandUpdate(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "HandUpdate Success!",
 	})
-	httputils.HandUpdate("")
+	filutils.HandUpdate("")
+
+}
+
+func UpdateBlockStats(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "UpdateBlockStats Success!",
+	})
+	filutils.UpdateBlockStats("")
 
 }
 
 func Ticker(c *gin.Context) {
-	getTicker := ticker.GetTicker()
+	ticker.SetTickerToRedis()
 	c.JSON(200, gin.H{
-		"message": getTicker,
+		"message": "Ticker to redis Success!",
 	})
 }
 

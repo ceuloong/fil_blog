@@ -1,35 +1,30 @@
 package models
 
 import (
-	"github.com/shopspring/decimal"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
-type LuckyBlock struct {
-	//gorm.Model
-	ID          uint            `gorm:"primarykey"`
-	Node        string          `gorm:"type:varchar(255)"`
-	Height      int64           `gorm:"type:int;not null"`
-	Date        time.Time       `gorm:"type:datetime"`
-	NodeFrom    string          `gorm:"type:varchar(255)"`
-	NodeTo      string          `gorm:"type:varchar(255)"`
-	Message     string          `gorm:"type:varchar(255)"`
-	RewardValue decimal.Decimal `gorm:"type:decimal(20, 8)"`
-	Type        string          `gorm:"type:varchar(50)"`
-	CreateTime  time.Time       `gorm:"type:datetime"`
-	TimeTag     int64           `gorm:"type:bigint"`
-	Category    string          `gorm:"type:varchar(50)"`
-	PidNode     string          `gorm:"type:varchar(255)"`
+/**
+*  报块表
+ * @Description: block表
+*/
+type Block struct {
+	ID          uint            `gorm:"primarykey" json:"id"`
+	Node        string          `gorm:"type:varchar(255)" json:"node"`
+	Height      int64           `gorm:"type:int;not null" json:"height"`
+	BlockTime   time.Time       `gorm:"type:datetime" json:"block_time"`
+	NodeFrom    string          `gorm:"type:varchar(255)" json:"node_from"`
+	NodeTo      string          `gorm:"type:varchar(255)" json:"node_to"`
+	Message     string          `gorm:"type:varchar(255)" json:"message"`
+	RewardValue decimal.Decimal `gorm:"type:decimal(20, 8)" json:"reward_value"`
+	MsgCount    int             `gorm:"type:int" json:"msg_count"`
+	BlockSize   int             `gorm:"type:int" json:"block_size"`
+	Status      int             `gorm:"type:varchar(50)" json:"status"`
+	CreateTime  time.Time       `gorm:"type:datetime" json:"create_time"`
 }
 
-func (table *LuckyBlock) TableName() string {
-	return "lucky_block"
+func (table *Block) TableName() string {
+	return "block"
 }
-
-//gorm.DefaultTableNameHandler = func (db *gorm.DB, defaultTableName string) string  {
-//	return "tb_" + defaultTableName;
-//}
-
-//func Create() {
-//	database.DB.AutoMigrate(&LuckyBlock{})
-//}

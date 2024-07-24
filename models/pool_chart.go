@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/shopspring/decimal"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type PoolChart struct {
@@ -17,6 +18,7 @@ type PoolChart struct {
 	PowerUnit           string          `gorm:"type:varchar(50)",算力单位`
 	PowerPoint          decimal.Decimal `gorm:"type:decimal(10,3)",算力占比`
 	ControlBalance      decimal.Decimal `gorm:"type:decimal(20,8)"`
+	DeptId              int             `gorm:"type:int"`
 }
 
 func (table *PoolChart) TableName() string {

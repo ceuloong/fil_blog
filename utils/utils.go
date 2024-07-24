@@ -47,6 +47,13 @@ func GetLastMonthTime() time.Time {
 	return time.Date(year, month-1, day, now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), now.Location())
 }
 
+// SetTime 设置时间的小时数
+func SetTime(now time.Time, hour int) time.Time {
+	// 获取当前时间的年份和月份
+	year, month, day := now.Date()
+	return time.Date(year, month, day, hour, 0, 0, 0, now.Location())
+}
+
 func Utc0Plus8Time(now time.Time) time.Time {
 	h, _ := time.ParseDuration("-1h")
 	h1 := now.Add(8 * h)
@@ -72,7 +79,7 @@ func DecimalValueFromFloat(f64 float64) decimal.Decimal {
 }
 
 func DecimalValueFromLong(value decimal.Decimal) decimal.Decimal {
-	v := value.Div(decimal.NewFromFloat(math.Pow10(18))).Round(4)
+	v := value.Div(decimal.NewFromFloat(math.Pow10(18))).RoundDown(4)
 	return v
 }
 
@@ -105,8 +112,8 @@ func DecimalDiv1024xnValue(str string, n float64) decimal.Decimal {
 func FloatValue(str string) float64 {
 	floatValue, err := strconv.ParseFloat(str, 64)
 	if err != nil {
-		panic(err)
 		floatValue = 0
+		panic(err)
 	}
 	return floatValue
 }

@@ -5,10 +5,13 @@ import (
 	"blog/common"
 	"blog/config"
 	client "blog/monitor"
+	"blog/ticker"
+	"blog/utils"
 	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"time"
 )
 
 func main() {
@@ -35,6 +38,15 @@ func main() {
 
 	//r.GET("/index-correct", apis.GetIndexCorrect)
 
+	go func() {
+		ticker1 := time.NewTicker(time.Minute * 30)
+		for {
+			curTime := <-ticker1.C
+			fmt.Printf("获取价格，当前时间：%s\n", utils.StringToTime(curTime.String()))
+			ticker.SetTickerToRedis()
+		}
+	}()
+
 	r.GET("/index", apis.GetIndex)
 
 	r.GET("/update-addresses", apis.UpdateAddresses)
@@ -43,19 +55,17 @@ func main() {
 
 	r.GET("/hand-update", apis.HandUpdate)
 
-	r.GET("/tron", apis.TronAddress)
-
 	r.GET("/ticker", apis.Ticker)
-	r.GET("/node", apis.NodeDetails)
+
+	r.GET("/blockstats", apis.UpdateBlockStats)
 
 	r.Run(":3000")
-
 }
 
 func main1() {
 	// fmt.Println("公众号：Golang来啦")
 	fmt.Println(time.Now())
-	ticker1 := time.NewTicker(4 * time.Hour)
+	ticker1 := time.NewTicker(time.Minute * 1)
 	for {
 		curTime := <-ticker1.C
 		fmt.Println(curTime)
@@ -76,8 +86,8 @@ func main1() {
 //	httputils.UpdateAddressesBalance()
 //}
 
-// 定时创建数据库
-func timeToCreatDb() {
+// 定时刷新价格
+func timeToRefreshPrice() {
 	for {
 		now := time.Now()                                                                              //获取当前时间，放到now里面，要给next用
 		next := now.Add(time.Hour * 1)                                                                 //通过now偏移1小时
@@ -87,6 +97,6 @@ func timeToCreatDb() {
 		<-t.C
 		fmt.Printf("执行时间为：%v\n", time.Now())
 		//以下为定时执行的操作
-		//start()
+		ticker.SetTickerToRedis()
 	}
 }

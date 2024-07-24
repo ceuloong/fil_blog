@@ -4,14 +4,15 @@ import (
 	"blog/models"
 	"blog/services"
 	"fmt"
-	"github.com/anaskhan96/soup"
-	"github.com/shopspring/decimal"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/anaskhan96/soup"
+	"github.com/shopspring/decimal"
 )
 
 func GetHttpContent(requestUrl string) string {
@@ -380,6 +381,10 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 	}
 }
 
+/**
+ * 保存矿池图表数据
+ * 根据节点的所属部门分类保存各部门总算力
+ */
 func savePoolChart() {
 	nodes := services.FindAllNode("")
 	poolChart := new(models.PoolChart)
