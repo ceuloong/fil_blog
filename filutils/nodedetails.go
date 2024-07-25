@@ -169,14 +169,10 @@ func GetNodeDetailByAddress(nodes models.Nodes) models.Nodes {
 
 func UpdateNodes(nodeParam string, timeTag int64) {
 	nodes := services.FindAllNode(nodeParam)
-
-	var savePool bool
-
 	for _, oneNode := range nodes {
 		if utils.TimeAddMinutes(oneNode.LastTime, 30).Compare(time.Now()) > 0 || oneNode.Balance.IsZero() {
 			continue
 		}
-		savePool = true
 		var needMysql bool
 
 		// 获取节点详细数据
@@ -246,15 +242,8 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 		n.TimeTag = timeTag
 		services.UpdateNode(n)
 		// 保存图表数据
-		services.SaveNodesChart(n)
+		//services.SaveNodesChart(n)
 		time.Sleep(10 * time.Second)
-	}
-
-	// 保存矿池图表数据
-	if savePool {
-		savePoolChart()
-	} else {
-		log.Printf("没有需要更新的节点。")
 	}
 }
 
@@ -262,19 +251,21 @@ func UpdateNodes(nodeParam string, timeTag int64) {
  * 保存矿池图表数据
  * 根据节点的所属部门分类保存各部门总算力
  */
-func savePoolChart() {
-	nodes := services.FindAllNode("")
+func SavePoolChart() {
 	// 矿池总算力
 	poolChart := new(models.PoolChart)
+	now := time.Now()
+	poolChart.LastTime = utils.SetTime(now, now.Hour())
+
+	nodes := services.FindAllNode("")
+
 	// 分部门保存
 	deptPoolChart := make(map[int]*models.PoolChart)
 
 	var hasPowerCount int
 	var noPowerCount int
-
-	now := time.Now()
-	poolChart.LastTime = utils.SetTime(now, now.Hour())
 	poolChart.PowerUnit = "PiB"
+	poolChart.DeptId = 0
 	for _, n := range nodes {
 		poolChart.Balance = poolChart.Balance.Add(n.Balance)
 		poolChart.AvailableBalance = poolChart.AvailableBalance.Add(n.AvailableBalance)

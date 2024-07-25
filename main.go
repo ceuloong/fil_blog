@@ -57,6 +57,7 @@ func main() {
 
 	r.GET("/ticker", apis.Ticker)
 
+	// 更新报块统计信息
 	r.GET("/blockstats", apis.UpdateBlockStats)
 
 	r.Run(":3000")

@@ -147,3 +147,15 @@ func NodeDetails(c *gin.Context) {
 		"message": details,
 	})
 }
+
+// SavePoolChart
+// @Success 200 {string} welcome
+//
+//	@Router /save-chart [get]
+func SavePoolChart(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"message": "SavePoolChart Success!",
+	})
+	filutils.HandUpdate("")
+
+}
