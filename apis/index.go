@@ -156,6 +156,6 @@ func SavePoolChart(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "SavePoolChart Success!",
 	})
-	filutils.HandUpdate("")
+	filutils.SavePoolChart()
 
 }

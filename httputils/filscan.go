@@ -13,59 +13,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-/**
-{
-    "result": {
-        "account_type": "miner",
-        "account_info": {
-            "account_miner": {
-                "account_basic": {
-                    "account_id": "f02636860",
-                    "account_address": "f23pdagbfajfgiwwl3xtejp7tnriauwdabgxm7say",
-                    "account_type": "miner",
-                    "account_balance": "7000000000000000000000",
-                    "nonce": 0,
-                    "code_cid": "bafk2bzacec24okjqrp7c7rj3hbrs5ez5apvwah2ruka6haesgfngf37mhk6us",
-                    "create_time": 1693463880,
-                    "latest_transfer_time": 1693908180
-                },
-                "account_indicator": {
-                    "account_id": "f02636860",
-                    "balance": "7000000000000000000000",
-                    "available_balance": "6995580436288964386175",
-                    "init_pledge": "0",
-                    "pre_deposits": "4419563711035613825",
-                    "locked_balance": "0",
-                    "quality_adjust_power": "0",
-                    "quality_power_rank": 0,
-                    "quality_power_percentage": "0",
-                    "raw_power": "0",
-                    "total_block_count": 0,
-                    "total_win_count": 0,
-                    "total_reward": "0",
-                    "sector_size": 34359738368,
-                    "sector_count": 0,
-                    "live_sector_count": 0,
-                    "fault_sector_count": 0,
-                    "recover_sector_count": 0,
-                    "active_sector_count": 0,
-                    "terminate_sector_count": 0
-                },
-                "peer_id": "12D3KooWHreGdoJYYexa3hEPRkq2EHMYa4rndm8f2a3QEhJXtGKH",
-                "owner_address": "f02362285",
-                "worker_address": "f3sippik6xflfothukv3lkyvokrkenpmpfyn2o7e6gpzj5nmr3zi7jcog47l5kqmfepg7gh7kvhjazxdp6dlvq",
-                "controllers_address": [
-                    "f3uicfhyrhpo6flwjrwbhzqq7cnce3ik47ha7lt3nmoo5pbhztoxa5fv457wffx3sekt2nfu46bdjxe66y7iia",
-                    "f3vmi4of2gl53rqeoszr74mduokp3hc7gj3a2ihiduot3oikhpti3qzexvbxqxnoqy7dpq5wlkrnljkpw2e6ha"
-                ],
-                "beneficiary_address": "f26pznq3qw2j7vjc4g2tlhdheduuekbtgzoigpvbi",
-                "ip_address": ""
-            }
-        }
-    }
-}
-*/
-
 // ResultTotal 返回的结构体
 type ResultTotal struct {
 	Result struct {

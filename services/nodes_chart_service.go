@@ -3,12 +3,13 @@ package services
 import (
 	"blog/common"
 	"blog/models"
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
-func InsertNodesChart(nodesChart models.NodesChart) *gorm.DB {
-	return common.DB.Create(&nodesChart)
+func InsertNodesChart(nodesChart models.NodesChart) error {
+	return common.DB.Create(&nodesChart).Error
 }
 
 func UpdateNodesChart(nodesChart models.NodesChart) *gorm.DB {
@@ -73,9 +74,13 @@ func GetNodesChart(nodes models.Nodes) models.NodesChart {
 	return nodesChart
 }
 
-func SaveNodesChart(nodes models.Nodes) {
+func SaveNodesChart(nodes models.Nodes) error {
 
 	nodesChart := GetNodesChart(nodes)
 
-	InsertNodesChart(nodesChart)
+	err := InsertNodesChart(nodesChart)
+	if err != nil {
+		return err
+	}
+	return nil
 }

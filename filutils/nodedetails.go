@@ -243,6 +243,7 @@ func UpdateNodes(nodeParam string, timeTag int64) {
 		services.UpdateNode(n)
 		// 保存图表数据
 		//services.SaveNodesChart(n)
+		//blog抓取数据项目不再保存图表数据
 		time.Sleep(10 * time.Second)
 	}
 }
@@ -252,35 +253,36 @@ func UpdateNodes(nodeParam string, timeTag int64) {
  * 根据节点的所属部门分类保存各部门总算力
  */
 func SavePoolChart() {
-	// 矿池总算力
-	poolChart := new(models.PoolChart)
 	now := time.Now()
-	poolChart.LastTime = utils.SetTime(now, now.Hour())
+	lastTime := utils.SetTime(now, now.Hour())
+	poolChart := &models.PoolChart{
+		LastTime:  lastTime,
+		PowerUnit: "PiB",
+		DeptId:    0,
+	}
 
 	nodes := services.FindAllNode("")
 
-	// 分部门保存
 	deptPoolChart := make(map[int]*models.PoolChart)
+	hasPowerCount := 0
+	noPowerCount := 0
 
-	var hasPowerCount int
-	var noPowerCount int
-	poolChart.PowerUnit = "PiB"
-	poolChart.DeptId = 0
 	for _, n := range nodes {
-		poolChart.Balance = poolChart.Balance.Add(n.Balance)
-		poolChart.AvailableBalance = poolChart.AvailableBalance.Add(n.AvailableBalance)
-		poolChart.SectorPledgeBalance = poolChart.SectorPledgeBalance.Add(n.SectorPledgeBalance)
-		poolChart.VestingFunds = poolChart.VestingFunds.Add(n.VestingFunds)
-		poolChart.QualityAdjPower = poolChart.QualityAdjPower.Add(n.QualityAdjPower)
-		poolChart.PowerPoint = poolChart.PowerPoint.Add(n.PowerPoint)
-		poolChart.ControlBalance = poolChart.ControlBalance.Add(n.ControlBalance)
-		poolChart.RewardValue = poolChart.RewardValue.Add(n.RewardValue)
+		if err := services.SaveNodesChart(n); err != nil {
+			log.Printf("保存节点%s的图表数据失败：%s\n", n.Node, err)
+		}
+
+		updatePoolChart(poolChart, n) // 更新矿池图表数据
 
 		if _, ok := deptPoolChart[n.DeptId]; !ok && n.DeptId > 0 {
-			deptPoolChart[n.DeptId] = new(models.PoolChart)
-			deptPoolChart[n.DeptId].LastTime = poolChart.LastTime
-			deptPoolChart[n.DeptId].PowerUnit = poolChart.PowerUnit
-			deptPoolChart[n.DeptId].DeptId = n.DeptId
+			deptPoolChart[n.DeptId] = &models.PoolChart{
+				LastTime:  lastTime,
+				PowerUnit: "PiB",
+				DeptId:    n.DeptId,
+			}
+		}
+		if _, ok := deptPoolChart[n.DeptId]; ok {
+			updatePoolChart(deptPoolChart[n.DeptId], n) // 更新部门矿池图表数据
 		}
 
 		if n.QualityAdjPower.IsZero() {
@@ -290,24 +292,26 @@ func SavePoolChart() {
 		}
 	}
 
-	services.SavePoolChart(poolChart)
-	log.Printf("一共更新的 %d 个节点，其中有算力的节点 %d 个, 算力为0的节点 %d 个。\n", len(nodes), hasPowerCount, noPowerCount)
+	services.SavePoolChart(poolChart) // 保存矿池图表数据
 
-	for _, n := range nodes {
-		deptPoolChart[n.DeptId].Balance = deptPoolChart[n.DeptId].Balance.Add(n.Balance)
-		deptPoolChart[n.DeptId].AvailableBalance = deptPoolChart[n.DeptId].AvailableBalance.Add(n.AvailableBalance)
-		deptPoolChart[n.DeptId].SectorPledgeBalance = deptPoolChart[n.DeptId].SectorPledgeBalance.Add(n.SectorPledgeBalance)
-		deptPoolChart[n.DeptId].VestingFunds = deptPoolChart[n.DeptId].VestingFunds.Add(n.VestingFunds)
-		deptPoolChart[n.DeptId].QualityAdjPower = deptPoolChart[n.DeptId].QualityAdjPower.Add(n.QualityAdjPower)
-		deptPoolChart[n.DeptId].PowerPoint = deptPoolChart[n.DeptId].PowerPoint.Add(n.PowerPoint)
-		deptPoolChart[n.DeptId].ControlBalance = deptPoolChart[n.DeptId].ControlBalance.Add(n.ControlBalance)
-		deptPoolChart[n.DeptId].RewardValue = deptPoolChart[n.DeptId].RewardValue.Add(n.RewardValue)
-	}
+	log.Printf("一共更新的 %d 个节点，其中有算力的节点 %d 个, 算力为0的节点 %d 个。\n", len(nodes), hasPowerCount, noPowerCount)
 
 	for k, v := range deptPoolChart {
 		log.Printf("保存部门%d的矿池数据\n", k)
 		services.SavePoolChart(v)
 	}
+}
+
+func updatePoolChart(poolChart *models.PoolChart, node models.Nodes) {
+	// 累加节点数据到矿池图表
+	poolChart.Balance = poolChart.Balance.Add(node.Balance)
+	poolChart.AvailableBalance = poolChart.AvailableBalance.Add(node.AvailableBalance)
+	poolChart.SectorPledgeBalance = poolChart.SectorPledgeBalance.Add(node.SectorPledgeBalance)
+	poolChart.VestingFunds = poolChart.VestingFunds.Add(node.VestingFunds)
+	poolChart.QualityAdjPower = poolChart.QualityAdjPower.Add(node.QualityAdjPower)
+	poolChart.PowerPoint = poolChart.PowerPoint.Add(node.PowerPoint)
+	poolChart.ControlBalance = poolChart.ControlBalance.Add(node.ControlBalance)
+	poolChart.RewardValue = poolChart.RewardValue.Add(node.RewardValue)
 }
 
 func HandUpdate(nodeParam string) {

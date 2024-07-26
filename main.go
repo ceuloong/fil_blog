@@ -60,6 +60,8 @@ func main() {
 	// 更新报块统计信息
 	r.GET("/blockstats", apis.UpdateBlockStats)
 
+	r.GET("/savechart", apis.SavePoolChart)
+
 	r.Run(":3000")
 }
 
