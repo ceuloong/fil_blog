@@ -4,11 +4,12 @@ import (
 	"blog/common"
 	"blog/models"
 	"fmt"
-	"github.com/shopspring/decimal"
-	"gorm.io/gorm"
 	"log"
 	"math"
 	"time"
+
+	"github.com/shopspring/decimal"
+	"gorm.io/gorm"
 )
 
 func SaveNode(nodes []models.Nodes) *gorm.DB {
@@ -58,6 +59,24 @@ func UpdateNode(node models.Nodes) {
 	tx := common.DB.Save(&node) //.Exec(sql)
 	if tx != nil {
 		log.Printf("update %s success:\n", node.Node)
+	}
+}
+
+// UpdateNodeHeight 更新节点高度
+func UpdateNodeHeight(height int64, node string) {
+	sql := fmt.Sprintf("UPDATE fil_nodes SET height=%d where node='%s'", height, node)
+	tx := common.DB.Exec(sql)
+	if tx != nil {
+		log.Printf("update %s height success:\n", node)
+	}
+}
+
+// UpdateSyncStatus 更新同步状态
+func UpdateSyncStatus(sync string, node string) {
+	sql := fmt.Sprintf("UPDATE fil_nodes SET sync_status=%s where node='%s'", sync, node)
+	tx := common.DB.Exec(sql)
+	if tx != nil {
+		log.Printf("update %s sync_status success:\n", node)
 	}
 }
 

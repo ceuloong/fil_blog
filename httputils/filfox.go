@@ -98,7 +98,9 @@ func pageNode(nodes []models.Nodes, p int, pg int, timeTag int64) {
 		//		continue
 		//	}
 		total := getTotalNum(node.Node) // 获取全部记录数量
-		services.UpdateRealCount(total, node.Node)
+		if total > 0 {
+			services.UpdateRealCount(total, node.Node)
+		}
 		page := pageCount(total-int(count), pageSize)
 		if page <= 0 {
 			continue
@@ -256,7 +258,7 @@ func GetHttpHtmlNew(node SpiderNode) {
 			}
 		}
 
-		if totalCount > total {
+		if totalCount > total && total > 0 {
 			if page < totalCount/pageSize {
 				addPage = page + 1 // 加1是再次查询当前页数据，总数量增加了一，页数的位置有变化
 				_, newPage := Spider(node, addPage, pageSize, 0)

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"blog/services"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -60,10 +61,22 @@ func echo(w http.ResponseWriter, r *http.Request) {
 func processMsg(msg *Message) {
 	switch msg.Type {
 	case NewBlock:
-		fmt.Println("新区块：", msg)
+		fmt.Println("新区块：", msg.Data)
+		bs := services.BlockService{}
+		msg.Data["status"] = 1
+		bs.InsertMap(msg.Data)
 	case OrphanBlock:
+		bs := services.BlockService{}
+		msg.Data["status"] = 2
+		bs.InsertMap(msg.Data)
 	case LotusMinerInfo:
+		fmt.Println("矿工信息：", msg.Content)
+		ms := ReadToBean(msg.Content)
+		services.UpdateSyncStatus(ms.Chain, ms.Miner)
 	case NewMineOne:
+		//同步的最新高度
+		fmt.Println("新挖矿：", msg.Data)
+		services.UpdateNodeHeight(msg.Data["epoch"].(int64), msg.Data["miner"].(string))
 
 	default:
 		fmt.Println("未知消息：", msg)
