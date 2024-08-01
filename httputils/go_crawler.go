@@ -150,6 +150,15 @@ func GetNodeDetailByAddress(nodes models.Nodes) models.Nodes {
 				continue
 			}
 			if strings.Contains(text, "原值算力") {
+				rawPower := strings.SplitAfter(text, ":")[1]
+				nodes.RawPower = DecimalValue(FormaterString(strings.Split(rawPower, " ")[0]))
+				powerUnit := strings.TrimSpace(strings.Split(rawPower, " ")[1])
+				if powerUnit == "TiB" {
+					nodes.RawPower = nodes.RawPower.Div(DecimalValue("1000")).Round(2)
+				} else if powerUnit == "GiB" {
+					nodes.RawPower = nodes.RawPower.Div(DecimalValue("1000000")).Round(2)
+				}
+
 				s := link.FindNextElementSibling().Children()
 				for i, value := range s {
 					if i == 2 {
@@ -195,6 +204,10 @@ func GetNodeDetailByAddress(nodes models.Nodes) models.Nodes {
 				}
 				//m["扇区状态"] = stas
 				nodes.SectorStatus = strings.TrimSpace(stas)
+
+				if nodes.SectorError < 10 {
+					nodes.QualityPower = nodes.QualityAdjPower
+				}
 				continue
 			}
 			if strings.Contains(text, "地址:") {
@@ -411,6 +424,10 @@ func HandUpdate(nodeParam string) {
 	nodes := services.FindAllNode(nodeParam)
 
 	var contents string
+	var title string
+	ms := services.SendMsg{}
+
+	var maxHeight uint
 
 	for _, oneNode := range nodes {
 		//if TimeAddMinutes(oneNode.LastHandTime, 30)
@@ -436,16 +453,24 @@ func HandUpdate(nodeParam string) {
 		services.UpdateNode(n)
 
 		if n.SectorError > oneNode.SectorError && (n.SectorError-oneNode.SectorError > 100) {
-			contents += fmt.Sprintf("节点：%s 当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d。<br/>", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError)
+			title = fmt.Sprintf("节点%s扇区错误。", n.Node)
+			contents = fmt.Sprintf("节点：%s当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d。", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError)
+			ms.SaveMsgByType(n.Node, title, contents, models.SectorsError)
 		}
-	}
-	if len(contents) > 0 {
-		var msg models.Msg
-		msg.Title = "扇区错误"
-		msg.Content = contents
-		msg.CreateTime = time.Now()
-		msg.SendStatus = 0
-		services.InsertMsg(msg)
+
+		if maxHeight < n.Height {
+			maxHeight = n.Height
+		}
+		if n.Height > 0 && maxHeight > n.Height {
+			title = fmt.Sprintf("节点%s高度延迟。", n.Node)
+			contents = fmt.Sprintf("当前最新高度为%d,节点%s的高度%d，已延迟。", maxHeight, n.Node, n.Height)
+			ms.SaveMsgByType(n.Node, title, contents, models.HeightDelay)
+		}
+		if len(n.SyncStatus) > 0 && !strings.Contains(n.SyncStatus, "sync ok") {
+			title = fmt.Sprintf("节点%s算力异常", n.Node)
+			contents = fmt.Sprintf("节点%s当前算力：%s %s，算力减少：%s，请排查原因。", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.QualityAdjPowerDelta24h.String())
+			ms.SaveMsgByType(n.Node, title, contents, models.SectorsError)
+		}
 	}
 
 	log.Printf("手动更新节点余额成功。")

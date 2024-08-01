@@ -120,7 +120,7 @@ func HandUpdate(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "HandUpdate Success!",
 	})
-	filutils.HandUpdate("")
+	httputils.HandUpdate("")
 
 }
 

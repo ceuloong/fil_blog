@@ -143,6 +143,7 @@ func GetNodeDetailByAddress(nodes models.Nodes) models.Nodes {
 
 	nodes.QualityAdjPower = utils.DecimalDiv1024xnValue(account.QualityPower.String(), 5)
 	nodes.PowerUnit = "PiB"
+	nodes.RawPower = utils.DecimalDiv1024xnValue(account.RawPower.String(), 5)
 
 	point := account.QualityPowerPercentStr
 	nodes.PowerPoint = utils.DecimalValue(strings.Split(point, "%")[0])
@@ -157,6 +158,10 @@ func GetNodeDetailByAddress(nodes models.Nodes) models.Nodes {
 	nodes.SectorEffective = account.ActiveCount
 	nodes.SectorError = account.FaultCount
 	nodes.SectorRecovering = account.RecoveryCount
+
+	if nodes.SectorError < 10 {
+		nodes.QualityPower = nodes.QualityAdjPower
+	}
 
 	nodes.Address = account.RobustAddress
 	nodes.MsgCount = account.MsgCount
@@ -318,6 +323,7 @@ func HandUpdate(nodeParam string) {
 	nodes := services.FindAllNode(nodeParam)
 
 	var contents string
+	ms := services.SendMsg{}
 
 	for _, oneNode := range nodes {
 		//if TimeAddMinutes(oneNode.LastHandTime, 30)
@@ -340,16 +346,9 @@ func HandUpdate(nodeParam string) {
 		services.UpdateNode(n)
 
 		if n.SectorError > oneNode.SectorError && (n.SectorError-oneNode.SectorError > 100) {
-			contents += fmt.Sprintf("节点：%s 当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d。<br/>", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError)
+			contents = fmt.Sprintf("节点：%s 当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d。", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError)
+			ms.SaveMsgByType(n.Node, "节点"+n.Node+"扇区错误", contents, models.SectorsError)
 		}
-	}
-	if len(contents) > 0 {
-		var msg models.Msg
-		msg.Title = "扇区错误"
-		msg.Content = contents
-		msg.CreateTime = time.Now()
-		msg.SendStatus = 0
-		services.InsertMsg(msg)
 	}
 
 	log.Printf("手动更新节点余额成功。")
