@@ -2,15 +2,20 @@ package redis
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/spf13/viper"
 )
 
 func connect() *redis.Client {
+	datasource := viper.Sub("redis")
+	host := datasource.GetString("host")
+	port := datasource.GetString("port")
 	// 连接redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     fmt.Sprintf("%s:%s", host, port),
 		Password: "", // 密码
 		DB:       0,  // 数据库
 		PoolSize: 20, // 连接池大小
