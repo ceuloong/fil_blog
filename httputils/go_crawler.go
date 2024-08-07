@@ -453,7 +453,7 @@ func HandUpdate(nodeParam string) {
 		services.UpdateNode(n)
 
 		if n.SectorError > oneNode.SectorError && (n.SectorError-oneNode.SectorError > 100) {
-			title = fmt.Sprintf("节点%s扇区错误。", n.Node)
+			title = fmt.Sprintf("节点%s扇区错误", n.Node)
 			contents = fmt.Sprintf("节点：%s当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d。", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError)
 			ms.SaveMsgByType(n.Node, title, contents, models.SectorsError)
 		}
@@ -462,7 +462,7 @@ func HandUpdate(nodeParam string) {
 			maxHeight = n.Height
 		}
 		if n.Height > 0 && maxHeight > n.Height {
-			title = fmt.Sprintf("节点%s高度延迟。", n.Node)
+			title = fmt.Sprintf("节点%s高度延迟", n.Node)
 			contents = fmt.Sprintf("当前最新高度为%d,节点%s的高度%d，已延迟。", maxHeight, n.Node, n.Height)
 			ms.SaveMsgByType(n.Node, title, contents, models.HeightDelay)
 		}
