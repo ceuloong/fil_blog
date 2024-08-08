@@ -454,7 +454,7 @@ func HandUpdate(nodeParam string) {
 
 		if n.SectorError > oneNode.SectorError && (n.SectorError-oneNode.SectorError > 100) {
 			title = fmt.Sprintf("节点%s扇区错误", n.Node)
-			contents = fmt.Sprintf("节点：%s当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d。", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError)
+			contents = fmt.Sprintf("节点：%s当前算力：%s %s，扇区状态：%s，错误扇区数量增加 %d，算力减少：%s TiB。", n.Node, n.QualityAdjPower.String(), n.PowerUnit, n.SectorStatus, n.SectorError-oneNode.SectorError, n.QualityAdjPowerDelta24h.String())
 			ms.SaveMsgByType(n.Node, title, contents, models.SectorsError)
 		}
 
