@@ -3,6 +3,7 @@ package services
 import (
 	"blog/common"
 	"blog/models"
+	"blog/services/dto"
 	"fmt"
 	"log"
 	"math"
@@ -72,11 +73,13 @@ func UpdateNodeHeight(height int64, node string) {
 }
 
 // UpdateSyncStatus 更新同步状态
-func UpdateSyncStatus(sync string, node string) {
-	sql := fmt.Sprintf("UPDATE fil_nodes SET sync_status=%s where node='%s'", sync, node)
-	tx := common.DB.Exec(sql)
+func UpdateSyncStatus(ms dto.MinerStatus) {
+	node := models.Nodes{}
+	common.DB.Model(&models.Nodes{}).Where("node = ?", ms.Miner).First(&node)
+	ms.Generate(&node)
+	tx := common.DB.Save(&node)
 	if tx != nil {
-		log.Printf("update %s sync_status success:\n", node)
+		log.Printf("update %s sync_status success:\n", node.Node)
 	}
 }
 

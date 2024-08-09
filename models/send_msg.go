@@ -22,6 +22,7 @@ type Msg struct {
 	SendTime   *time.Time `gorm:"type:datetime"`
 	Type       SendType   `gorm:"type:int"`
 	SendStatus int        `gorm:"type:int"`
+	DeptId     int        `gorm:"type:int"`
 }
 
 func (table *Msg) TableName() string {

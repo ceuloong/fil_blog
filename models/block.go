@@ -11,9 +11,8 @@ import (
  * @Description: block表
 */
 type Block struct {
-	ID          uint            `gorm:"primarykey" json:"id"`
+	Height      int64           `gorm:"primarykey;type:int;not null" json:"height"`
 	Node        string          `gorm:"type:varchar(255)" json:"node"`
-	Height      int64           `gorm:"type:int;not null" json:"height"`
 	BlockTime   time.Time       `gorm:"type:datetime" json:"block_time"`
 	NodeFrom    string          `gorm:"type:varchar(255)" json:"node_from"`
 	NodeTo      string          `gorm:"type:varchar(255)" json:"node_to"`

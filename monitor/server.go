@@ -1,4 +1,4 @@
-package client
+package monitor
 
 import (
 	"blog/services"
@@ -45,7 +45,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		} else {
 			//log.Printf("recv: aaa|%s|bb, type: %v \n", message, mt)
 			var msg *Message
-			json.Unmarshal(message, msg)
+			json.Unmarshal(message, &msg)
 
 			log.Printf("msg: %v", msg)
 
@@ -61,23 +61,26 @@ func echo(w http.ResponseWriter, r *http.Request) {
 func processMsg(msg *Message) {
 	switch msg.Type {
 	case NewBlock:
-		fmt.Println("新区块：", msg.Data)
+		//fmt.Println("新区块：", msg.Data)
 		bs := services.BlockService{}
-		msg.Data["status"] = 1
-		bs.InsertMap(msg.Data)
+		bs.InsertMap(msg.Data, 1)
 	case OrphanBlock:
 		bs := services.BlockService{}
-		msg.Data["status"] = 2
-		bs.InsertMap(msg.Data)
+		bs.InsertMap(msg.Data, 2)
 	case LotusMinerInfo:
-		fmt.Println("矿工信息：", msg.Content)
 		ms := ReadToBean(msg.Content)
-		services.UpdateSyncStatus(ms.Chain, ms.Miner)
+		if ms.Chain == "" || ms.Miner == "" {
+			fmt.Println("无效的消息：", msg)
+			return
+		}
+		services.UpdateSyncStatus(ms)
 	case NewMineOne:
 		//同步的最新高度
-		fmt.Println("新挖矿：", msg.Data)
-		services.UpdateNodeHeight(msg.Data["epoch"].(int64), msg.Data["miner"].(string))
-
+		fmt.Printf("同步%s最新高度%s：", msg.Data["miner"], msg.Data["epoch"])
+		if epoch, ok := msg.Data["epoch"]; ok {
+			height := int64(epoch.(float64))
+			services.UpdateNodeHeight(height, msg.Data["miner"].(string))
+		}
 	default:
 		fmt.Println("未知消息：", msg)
 	}

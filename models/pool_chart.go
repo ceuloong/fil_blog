@@ -14,9 +14,9 @@ type PoolChart struct {
 	VestingFunds        decimal.Decimal `gorm:"type:decimal(20, 8)"`
 	LastTime            time.Time       `gorm:"type:datetime"`
 	RewardValue         decimal.Decimal `gorm:"type:decimal(20, 8)"`
-	QualityAdjPower     decimal.Decimal `gorm:"type:decimal(20, 4)",有效算力`
-	PowerUnit           string          `gorm:"type:varchar(50)",算力单位`
-	PowerPoint          decimal.Decimal `gorm:"type:decimal(10,3)",算力占比`
+	QualityAdjPower     decimal.Decimal `gorm:"type:decimal(20, 4)" comment:"有效算力"`
+	PowerUnit           string          `gorm:"type:varchar(50)" comment:"算力单位"`
+	PowerPoint          decimal.Decimal `gorm:"type:decimal(10,3)" comment:"算力占比"`
 	ControlBalance      decimal.Decimal `gorm:"type:decimal(20,8)"`
 	DeptId              int             `gorm:"type:int"`
 }

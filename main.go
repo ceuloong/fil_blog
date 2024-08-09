@@ -4,7 +4,7 @@ import (
 	"blog/apis"
 	"blog/common"
 	"blog/config"
-	client "blog/monitor"
+	"blog/monitor"
 	"blog/ticker"
 	"blog/utils"
 	"fmt"
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	go func() {
-		client.RunTestServer()
+		monitor.RunTestServer()
 	}()
 
 	//r.GET("/index-correct", apis.GetIndexCorrect)

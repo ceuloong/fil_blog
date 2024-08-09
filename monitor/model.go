@@ -1,4 +1,4 @@
-package client
+package monitor
 
 type MsgType string
 

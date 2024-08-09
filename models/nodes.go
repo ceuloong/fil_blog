@@ -4,9 +4,11 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+	"gorm.io/gorm"
 )
 
 type Nodes struct {
+	gorm.Model
 	ID                      uint            `gorm:"primarykey"`
 	Node                    string          `gorm:"type:varchar(255)"`
 	MsigNode                string          `gorm:"type:varchar(255)"`
@@ -67,6 +69,7 @@ type Nodes struct {
 	RealCount               int64           `gorm:"type:int" comment:"实际交易数量"`
 	DeptId                  int             `json:"deptId"`
 	SyncStatus              string          `json:"syncStatus" gorm:"type:varchar(50);comment:同步状态"`
+	Beneficiary             string          `json:"beneficiary" gorm:"type:varchar(255);comment:受益人"`
 }
 
 func (table *Nodes) TableName() string {
